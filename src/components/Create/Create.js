@@ -7,12 +7,10 @@ import axios from 'axios';
 
 
 
- 
-
-
-
-
 //Where the form and html is created
+
+
+
 
 function Create() {
 
@@ -29,16 +27,117 @@ function Create() {
   const [additionalDrivers, setAdditionalDrivers] = useState('');
   const [commercialPurposes, setCommercialPurposes] = useState('');
   const [registeredState, setRegisteredState] = useState('');
-  const [currentValue, setCurrentValue] =  useState('');
-  const [vehicleRegistered, setVehicleRegistered] =  useState('');
+  const [currentValue, setCurrentValue] = useState('');
+  const [vehicleRegistered, setVehicleRegistered] = useState(null);
+
+
+  function validate() {
+    var valid = true;
+    var errorMessage = "";
+    var regexNum = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/;
+    var zipcodeRegex = /([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})/;
+
+    if (!prefix.trim()) { //removes whitespace from the end of a string 
+      valid = (false);
+      errorMessage = "Prefix is a required field.\n";
+    }
+
+    if (!firstName.trim()) {
+      valid = (false);
+      errorMessage += "First Name is Required.\n";
+    }
+
+    if (!lastName.trim()) {
+      valid = (false);
+      errorMessage += "Last Name is Required.\n";
+    }
+
+    if (!telephoneNumber.match(regexNum) || telephoneNumber.length > 10) {
+      valid = (false);
+      errorMessage += "Phone Number is Required and Must Be Valid.\n";
+    }
+
+    if (!addressLine1.trim()) {
+      valid = (false);
+      errorMessage += "Address Line One is Required.\n";
+    }
+
+    if (!addressLine2.trim()) {
+      valid = (false);
+      errorMessage += "Address Line Two is Required.\n";
+    }
+
+    if (!city.trim()) {
+      valid = (false);
+      errorMessage += "City is Required.\n";
+    }
+
+    if (!zipcode.match(zipcodeRegex)) {
+      valid = (false);
+      errorMessage += "Zip Code is Required.\n";
+    }
+
+    if (!vehicleType.trim()) {
+      valid = (false);
+      errorMessage += "Vehicle Type is Required.\n";
+    }
+
+    if (!engineSize.trim()) {
+      valid = (false);
+      errorMessage += "Engine Size is Required.\n";
+    }
+
+    if (!additionalDrivers.trim()) {
+      valid = (false);
+      errorMessage += "Additional Drivers is Required.\n";
+    }
+
+    if (!commercialPurposes.trim()) {
+      valid = (false);
+      errorMessage += "Commercial Purpose is Required.\n";
+    }
+    if (!registeredState.trim()) {
+      valid = (false);
+      errorMessage += "Used Outside of State is Required.\n";
+    }
+
+    if (Date.parse(vehicleRegistered) >= Date.now() || !vehicleRegistered) {
+      valid = (false);
+      errorMessage += "Date is Required and Cannot be in the Future.\n";
+    }//Date.parse(regDate)
+
+    if (!currentValue.trim()) {
+      valid = (false);
+      errorMessage += "Current Value is Required.";
+    } else if (parseInt(currentValue) < 0 || parseInt(currentValue) > 50000) {
+      valid = (false);
+      errorMessage += "Current Value must be between £0 and £50,000.\n";
+    }
+
+    if (valid) {
+      callMockApiWithAxiosPOST();
+      window.location.href = "/read";
+      alert("Record Added");
+    } else {
+      alert("Record Not Added - Please Examine the Following Fields:\n\n" + errorMessage);
+      console.log(errorMessage);
+      return false;
+    }
+
+  }
+
+
+
+
+
 
 
 
 
   let history = useHistory();
 
-   function callMockApiWithAxiosPOST() {
-   
+  function callMockApiWithAxiosPOST() {
+
 
 
     const formData = {
@@ -97,46 +196,24 @@ function Create() {
 
   ]
 
- //for additional drivers
- const drivers = [
-  { text: '0', value: '0' },
-  { text: '1', value: '1' },
-  { text: '2', value: '2' },
-  { text: '3', value: '3' },
-  { text: '4', value: '4' },
+  //for additional drivers
+  const drivers = [
+    { text: '0', value: '0' },
+    { text: '1', value: '1' },
+    { text: '2', value: '2' },
+    { text: '3', value: '3' },
+    { text: '4', value: '4' },
 
- ]
-
-//  function validate () {
-//    var valid =true;
-//    var errorMessage = "";
-//    var regexNum = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
-//    var zipcodeRegex= /(^\d{5}$)|(^\d{5}-\d{4}$)/
-
-//    if (!prefix.trim()) {
-//      valid = (false);
-//      errorMessage = "Prefix is required. \n";
-//    }
-
-//    if (valid) {
-//      callMockApi();
-//      //window.location.href ="/admin";
-//    } else {
-//      alert("Record not added, please see following fields:\n" + errorMessage);
-//      console.log(errorMessage)
-//      return false; 
-//    }
-//  }
+  ]
 
 
-
-return (
+  return (
     <div>
       <center>
-        <img src= {"https://1000logos.net/wp-content/uploads/2017/08/Allstate-Emblem.jpg"} height="150" width="450px" fluid/>
+        <img src={"https://1000logos.net/wp-content/uploads/2017/08/Allstate-Emblem.jpg"} height="150" width="450px" fluid />
         <h1>Car Insurance Quote</h1>
         <br></br>
-        </center>
+      </center>
 
       <Form>
         <div>
@@ -168,22 +245,22 @@ return (
           <Form.Field> <label>Address Line 2</label>
             <input placeholder='Address Line 2'
               onChange={e => setAddressLine2(e.target.value)} /> </Form.Field>
-              <br></br>
+          <br></br>
 
         </div>
 
         <div>
           <Form.Group >
-          <Form.Input fluid label='City' placeholder='City'
+            <Form.Input fluid label='City' placeholder='City'
               onChange={e => setCity(e.target.value)}
               width={8} />
-          
-          <Form.Input fluid label='Zip Code' placeholder='Zip Code' maxLength="30"
-              onChange={e => setZipcode(e.target.value)}
-              width={8} />      
 
-            
-             
+            <Form.Input fluid label='Zip Code' placeholder='Zip Code' maxLength="30"
+              onChange={e => setZipcode(e.target.value)}
+              width={8} />
+
+
+
           </Form.Group>
         </div>
 
@@ -213,9 +290,9 @@ return (
               options={drivers}
               placeholder='Number of Additional Drivers, maximum 4'
               onChange={e => setAdditionalDrivers(e.target.textContent)}
-              width={6} />   
+              width={6} />
 
-            
+
 
           </Form.Group>
         </div>
@@ -227,7 +304,7 @@ return (
             {/* radio button one */}
             <label>
               <b> Will the vehicle be used for commercial purposes?</b>
-              
+
             </label>
             <Form.Radio
               label="Yes"
@@ -245,8 +322,8 @@ return (
 
             {/* radio button two */}
             <label>
-             <b> Will the vehicle be used outside the registered state? </b>
-             
+              <b> Will the vehicle be used outside the registered state? </b>
+
             </label>
             <Form.Radio
               label="Yes"
@@ -260,39 +337,33 @@ return (
               checked={registeredState === "no"}
               onChange={() => setRegisteredState("no")}
             />
-            </Form.Group>
+          </Form.Group>
         </div>
 
 
-            <div>
-            <Form.Field> <label>What is the current value of the vehicle?</label>
-              <input placeholder='Estimated Vehicle Value'
-                onChange={e => setCurrentValue(e.target.value)} /> 
-            </Form.Field>
+        <div>
+          <Form.Field> <label>What is the current value of the vehicle?</label>
+            <input placeholder='Estimated Vehicle Value'
+              onChange={e => setCurrentValue(e.target.value)} />
+          </Form.Field>
 
-            <Form.Field> <label>What is the date of vehicle registration?</label>
-              <input type="date" placeholder='Date of Vehicle Registration'
-                onChange={e => setVehicleRegistered(e.target.value)} />
-                <br></br> 
-            </Form.Field>
+          <Form.Field> <label>What is the date of vehicle registration?</label>
+            <input type="date" placeholder='Date of Vehicle Registration'
+              onChange={e => setVehicleRegistered(e.target.value)} />
+            <br></br>
+          </Form.Field>
 
-
-
-
-                </div>
-                <center> 
-                  <br></br>     
-         <Button
-          color="blue"
-          type='submit'
-          
-          onClick={callMockApiWithAxiosPOST}
-        >Submit</Button>
+        </div>
+        <center>
+          <br></br>
+          <Button
+            color="blue"
+            onClick={validate}
+          >Submit</Button>
         </center>
       </Form>
-      
-    </div>
-    
+ </div>
+
   );
 }
 
