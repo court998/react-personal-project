@@ -83,7 +83,7 @@ function Delete() {
             <Table.Cell width={1} textAlign={"center"}>{data.additionalDrivers}</Table.Cell>
             <Table.Cell width={1} textAlign={"center"}>{data.registeredState}</Table.Cell>
             <Table.Cell width={1} textAlign={"center"}>{data.commercialPurposes}</Table.Cell>
-            <Table.Cell width={2} textAlign={"center"}>{data.registeredState}</Table.Cell>
+            <Table.Cell width={2} textAlign={"center"}>{data.vehicleRegistered}</Table.Cell>
             <Table.Cell width={2} textAlign={"center"}>${data.currentValue}</Table.Cell>
             <Table.Cell width={3} textAlign={"center"}>${data.quoteAmount}</Table.Cell>
           </Table.Row>
