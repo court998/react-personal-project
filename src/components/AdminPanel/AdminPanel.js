@@ -1,97 +1,68 @@
-import React from 'react';
-import { Form } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import './AdminPanel.css';
+import { Link } from 'react-router-dom';
+import { Dropdown, Button } from 'semantic-ui-react';
+import 'semantic-ui-css/semantic.min.css';
 import Read from '../Read/Read';
-import Update from '../Update/Update'
-import Delete from '../Delete/Delete';
 
-
-function Admin() {
-
-   
-
-  const admin = [
-    { text: 'View driver details', value: 'read' },
-    { text: 'Update telephone number', value: 'update' },
-    { text: 'Delete driver', value: 'delete' }
-
+function AdminPanel() {
+  const [selectedOperation, setSelectedOperation] = useState('');
+  const friendOptions = [
+    {
+      key: 'Get a Record',
+      text: 'Get a Record',
+      value: 'Read',
+    },
+    {
+      key: 'Update a Record',
+      text: 'Update a Record',
+      value: 'Update',
+    },
+    {
+      key: 'Delete a Record',
+      text: 'Delete a Record',
+      value: 'Delete',
+    },
   ]
+  const navigateToPage = () => {
+    console.log(selectedOperation);
+    if (selectedOperation === "Get a Record") {
+      window.location.href="/get";
+    }
+    if (selectedOperation === "Update a Record") {
+      window.location.href="/update";
+    }
 
-  function displayComponent(component) {
-    switch (component) {
-      case 'read':
-        document.getElementById("read").hidden = false;
-        document.getElementById("update").hidden = true;
-        document.getElementById("delete").hidden = true;
-       
-        break;
-      case 'update':
-        document.getElementById("read").hidden = true;
-        document.getElementById("update").hidden = false;
-        document.getElementById("delete").hidden = true;
-      
-        break;
-      case 'delete':
-        document.getElementById("read").hidden = true;
-        document.getElementById("update").hidden = true;
-        document.getElementById("delete").hidden = false;
-      
-        break;
-        
-     
-      default:
-        document.getElementById("read").hidden = true;
-        document.getElementById("update").hidden = true;
-        document.getElementById("delete").hidden = true;
-       
-      
+    if (selectedOperation === "Delete a Record") {
+      window.location.href="/delete";
     }
   }
+  
+  
 
   return (
-    <div className="Admin">
 
-      <div>
+    <div>
       <center>
         <img src= {"https://1000logos.net/wp-content/uploads/2017/08/Allstate-Emblem.jpg"} height="150" width="450px" fluid/>
         <h1>Admin Panel</h1>
         <br></br>
         </center>
         
-      </div>
-
-      <hr />
-
-      <div>
-        <Form>
-          <Form.Field>
-            <label>Select an operation</label>
-            <select onChange={e => displayComponent(e.target.value)}>
-              {admin.map((admin) => (
-                <option value={admin.value}>{admin.text}</option>
-              ))}
-            </select>
-          </Form.Field>
-        </Form>
-      </div>
-
-      
-
-      <div id='read' hidden>
-        <Read />
-      </div>
-      <div id='update' hidden>
-        <Update />
-      </div>
-      <div id='delete' hidden>
-        <Delete />
-      </div>
-      
-
-
-
+      <h3> Welcome to the Admin Panel </h3>
+      <p>Please choose an operation from the dropdown below:</p>
+      <Dropdown
+        placeholder='Please Select An Operation'
+        onChange={e => setSelectedOperation(e.target.innerText)}
+        fluid
+        selection
+        options={friendOptions}
+      /> 
+      {/* <Link to={linkURL}> */}
+        <Button positive type='submit' onClick={navigateToPage}>Next</Button>
+      {/* </Link> */}
     </div>
-  )
+
+  );
 }
-
-
-export default Admin;
+export default AdminPanel;

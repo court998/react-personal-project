@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
+import { Form, Grid, Segment } from 'semantic-ui-react';
+import axios from 'axios';
 import './Create.css';
 import { useHistory } from 'react-router';
-import { Button, Form } from 'semantic-ui-react';
-import axios from 'axios';
-
-
-
-
-//Where the form and html is created
-
-
 
 
 function Create() {
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [prefix, setPrefix] = useState('');
@@ -22,7 +14,7 @@ function Create() {
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
   const [zipcode, setZipcode] = useState('');
-  const [vehicleType, setVehicleType] = useState('');
+  const [vehicleType, setvehicleType] = useState('');
   const [engineSize, setEngineSize] = useState('');
   const [additionalDrivers, setAdditionalDrivers] = useState('');
   const [commercialPurposes, setCommercialPurposes] = useState('');
@@ -30,14 +22,13 @@ function Create() {
   const [currentValue, setCurrentValue] = useState('');
   const [vehicleRegistered, setVehicleRegistered] = useState(null);
 
-
   function validate() {
     var valid = true;
     var errorMessage = "";
     var regexNum = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/;
-    var zipcodeRegex = /([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})/;
+    var zipcodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
 
-    if (!prefix.trim()) { //removes whitespace from the end of a string 
+    if (!prefix.trim()) {
       valid = (false);
       errorMessage = "Prefix is a required field.\n";
     }
@@ -51,8 +42,8 @@ function Create() {
       valid = (false);
       errorMessage += "Last Name is Required.\n";
     }
-
-    if (!telephoneNumber.match(regexNum) || telephoneNumber.length > 10) {
+    
+    if (!telephoneNumber.match(regexNum) || telephoneNumber.length > 11) {
       valid = (false);
       errorMessage += "Phone Number is Required and Must Be Valid.\n";
     }
@@ -72,9 +63,9 @@ function Create() {
       errorMessage += "City is Required.\n";
     }
 
-    if (!zipcode.match(zipcodeRegex)) {
+    if(!zipcode.match(zipcodeRegex)){
       valid = (false);
-      errorMessage += "Zip Code is Required.\n";
+      errorMessage += "Zip Code is Required and must be presented in the format: 12345-6789\n";
     }
 
     if (!vehicleType.trim()) {
@@ -96,6 +87,7 @@ function Create() {
       valid = (false);
       errorMessage += "Commercial Purpose is Required.\n";
     }
+
     if (!registeredState.trim()) {
       valid = (false);
       errorMessage += "Used Outside of State is Required.\n";
@@ -106,16 +98,16 @@ function Create() {
       errorMessage += "Date is Required and Cannot be in the Future.\n";
     }//Date.parse(regDate)
 
-    if (!currentValue.trim()) {
+    if(!currentValue.trim()){
       valid = (false);
       errorMessage += "Current Value is Required.";
-    } else if (parseInt(currentValue) < 0 || parseInt(currentValue) > 50000) {
+    } else if(parseInt(currentValue) < 0 || parseInt(currentValue) > 50000){
       valid = (false);
-      errorMessage += "Current Value must be between £0 and £50,000.\n";
+      errorMessage += "Current Value must be between $0 and $50,000.\n";
     }
 
     if (valid) {
-      callMockApiWithAxiosPOST();
+      callMockAPI();
       window.location.href = "/read";
       alert("Record Added");
     } else {
@@ -126,57 +118,42 @@ function Create() {
 
   }
 
-
-
-
-
-
-
-
-
   let history = useHistory();
-
-  function callMockApiWithAxiosPOST() {
-
-
-
+  const callMockAPI = () => {
+    console.log(prefix + " " + firstName + " " + lastName + " " + telephoneNumber + "\n" + addressLine1 + " " + addressLine2 + " " + city + " " + zipcode + "\n" +
+      vehicleType + " " + engineSize + " " + additionalDrivers + " " + commercialPurposes + " " + registeredState + " " + currentValue + " " + vehicleRegistered);
     const formData = {
+      prefix,
       firstName,
       lastName,
-      prefix, //options
       telephoneNumber,
       addressLine1,
       addressLine2,
       city,
       zipcode,
-      vehicleType, //vehicle
-      engineSize,  //engine
+      vehicleType,
+      engineSize,
       additionalDrivers,
       commercialPurposes,
       registeredState,
       currentValue,
       vehicleRegistered
-
     }
-
-
-    const endpointURL = "https://6151d1824a5f22001701d45f.mockapi.io/api/v1/project";
+    const endpointURL = "http://localhost:8080/applicants";
     axios.post(endpointURL, formData)
-      .then(() => history.push("/admin"))
+      .then(() => history.push("/read"))
       .catch(err => console.log(err));
   }
 
-  //for prefix
-  const options = [
+  const prefixOptions = [
     { text: 'Mr', value: 'Mr' },
-    { text: 'Mrs', value: 'Mrs' },
     { text: 'Miss', value: 'Miss' },
+    { text: 'Mrs', value: 'Mrs' },
     { text: 'Ms', value: 'Ms' },
     { text: 'Dr', value: 'Dr' },
   ]
 
-  //for vehicle type
-  const vehicle = [
+  const vehicleTypeOptions = [
     { text: 'Cabriolet', value: 'Cabriolet' },
     { text: 'Coupe', value: 'Coupe' },
     { text: 'Estate', value: 'Estate' },
@@ -184,187 +161,117 @@ function Create() {
     { text: 'Other', value: 'Other' },
   ]
 
-  //for engine size
-  const engine = [
+  const engineSizeOptions = [
     { text: '1000', value: '1000' },
     { text: '1600', value: '1600' },
-    { text: '2000', value: '2500' },
+    { text: '2000', value: '2000' },
     { text: '2500', value: '2500' },
     { text: '3000', value: '3000' },
-    { text: '3000', value: '3000' },
     { text: 'Other', value: 'Other' },
-
   ]
 
-  //for additional drivers
-  const drivers = [
+  const additionalDriversOptions = [
     { text: '0', value: '0' },
     { text: '1', value: '1' },
     { text: '2', value: '2' },
     { text: '3', value: '3' },
     { text: '4', value: '4' },
-
   ]
 
-
   return (
+    
     <div>
-      <center>
-        <img src={"https://1000logos.net/wp-content/uploads/2017/08/Allstate-Emblem.jpg"} height="150" width="450px" fluid />
-        <h1>Car Insurance Quote</h1>
+      <Form size={"medium"}>
+      <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'/>
+    <Grid.Column style={{ maxWidth: 450 }}></Grid.Column>
+    <Segment stacked>
+    <center>
+      <img src={"https://1000logos.net/wp-content/uploads/2017/08/Allstate-Emblem.jpg"} height="150" width="450px" fluid />
+        <h1>Vehicle Insurance Application</h1>
+        <h3>Please fill out the information below accurately</h3>
         <br></br>
       </center>
+        <Form.Group>
+          <Form.Select width={2} fluid label='Prefix' options={prefixOptions} placeholder='Prefix' onChange={e => setPrefix(e.target.textContent)} />
+          <Form.Input width={6} fluid label='First Name' placeholder='First Name' maxLength='20' onChange={e => setFirstName(e.target.value)} />
+          <Form.Input width={6} fluid label='Last Name' placeholder='Last Name' maxLength='20' onChange={e => setLastName(e.target.value)} />
+          <Form.Input width={4} fluid label='Phone Number' placeholder='Phone Number' maxLength='11' onChange={e => setTelephoneNumber(e.target.value)} />
+        </Form.Group>
 
-      <Form>
-        <div>
-          <Form.Group >
-            <Form.Select
-              fluid
-              label='Prefix'
-              options={options}
-              placeholder='Prefix'
-              onChange={e => setPrefix(e.target.textContent)}
-              width={2} />
+       <Form.Group>
+       <Form.Input width={8} fluid label='Address Line 1' placeholder='Address Line 1' maxLength='40' onChange={e => setAddressLine1(e.target.value)} />
+          <Form.Input width={8} fluid label='Address Line 2' placeholder='Address Line 2' maxLength='40' onChange={e => setAddressLine2(e.target.value)} />
+      </Form.Group>
 
-            <Form.Input fluid label='First name' placeholder='First name' maxLength="30"
-              onChange={e => setFirstName(e.target.value)}
-              width={5} />
-            <Form.Input fluid label='Last name' placeholder='Last name' maxLength="30"
-              onChange={e => setLastName(e.target.value)}
-              width={5} />
-            <Form.Input fluid label='Telephone Number' placeholder='Telephone Number'
-              onBlur={e => setTelephoneNumber(e.target.value)}
-              width={4} />
-          </Form.Group>
-        </div>
+        <Form.Group>
+          <Form.Field width={8}> <label>City</label> <input placeholder='City' onChange={e => setCity(e.target.value)} /> </Form.Field>
+          <Form.Field width={8}> <label>Zip Code</label> <input placeholder='Zip Code' onChange={e => setZipcode(e.target.value)} /> </Form.Field>
+        </Form.Group>
 
-        <div>
-          <Form.Field> <label>Address Line 1</label>
-            <input placeholder='Address Line 1'
-              onChange={e => setAddressLine1(e.target.value)} /> </Form.Field>
-          <Form.Field> <label>Address Line 2</label>
-            <input placeholder='Address Line 2'
-              onChange={e => setAddressLine2(e.target.value)} /> </Form.Field>
-          <br></br>
+        <Form.Group>
+          <Form.Select width={6} fluid label='Select vehicle type' options={vehicleTypeOptions} placeholder='Vehicle Type' onChange={e => setvehicleType(e.target.textContent)} />
+          <Form.Select width={6} fluid label='Select engine size (CC)' options={engineSizeOptions} placeholder='Engine Size' onChange={e => setEngineSize(e.target.textContent)} />
+          <Form.Select width={6} fluid label='Select the amount of additional drivers, maximum 4' options={additionalDriversOptions} placeholder='Additional Drivers'
+            onChange={e => setAdditionalDrivers(e.target.textContent)} />
+        </Form.Group>
 
-        </div>
+        <Form.Group inline>
+          <label>
+            Will the vehicle be used outside the registered state?
+          </label>
+          <Form.Radio
+            label="Yes"
+            value="Yes"
+            checked={registeredState === "Yes"}
+            onChange={() => setRegisteredState("Yes")}
+          />
+          <Form.Radio
+            label="No"
+            value="No"
+            checked={registeredState === "No"}
+            onChange={() => setRegisteredState("No")}
+          />
+        </Form.Group>
 
-        <div>
-          <Form.Group >
-            <Form.Input fluid label='City' placeholder='City'
-              onChange={e => setCity(e.target.value)}
-              width={8} />
+        <Form.Group inline>
+          <label>
+            Will the vehicle be used outside for commericial purposes?
+          </label>
+          <Form.Radio
+            label="Yes"
+            value="Yes"
+            checked={commercialPurposes === "Yes"}
+            onChange={() => setCommercialPurposes("Yes")}
+          />
+          <Form.Radio
+            label="No"
+            value="No"
+            checked={commercialPurposes === "No"}
+            onChange={() => setCommercialPurposes("No")}
+          />
+        </Form.Group>
 
-            <Form.Input fluid label='Zip Code' placeholder='Zip Code' maxLength="30"
-              onChange={e => setZipcode(e.target.value)}
-              width={8} />
+        <Form.Field>
+          <label>Date vehicle 1st registered</label>
+          <input type="date"
+            placeholder="Date registered"
+            onChange={(e) => setVehicleRegistered(e.target.value)}
+          />
+        </Form.Field>
 
+        <Form.Field> <label>Current Value of car in U.S Dollars</label> <input placeholder='Market Value?' onChange={e => setCurrentValue(e.target.value)} /> </Form.Field>
 
-
-          </Form.Group>
-        </div>
-
-
-
-        <div>
-          <Form.Group >
-            <Form.Select
-              fluid
-              label='Vehicle Type'
-              options={vehicle}
-              placeholder='Vehicle Type'
-              onChange={e => setVehicleType(e.target.textContent)}
-              width={6} />
-
-            <Form.Select
-              fluid
-              label='Engine Size'
-              options={engine}
-              placeholder='Engine Size'
-              onChange={e => setEngineSize(e.target.textContent)}
-              width={6} />
-
-            <Form.Select
-              fluid
-              label='Additional Drivers'
-              options={drivers}
-              placeholder='Number of Additional Drivers, maximum 4'
-              onChange={e => setAdditionalDrivers(e.target.textContent)}
-              width={6} />
-
-
-
-          </Form.Group>
-        </div>
-
-        <div>
-          <Form.Group>
-
-
-            {/* radio button one */}
-            <label>
-              <b> Will the vehicle be used for commercial purposes?</b>
-
-            </label>
-            <Form.Radio
-              label="Yes"
-              value="yes"
-              checked={commercialPurposes === "yes"}
-              onChange={() => setCommercialPurposes("yes")}
-            />
-            <Form.Radio
-              label="No"
-              value="no"
-              checked={commercialPurposes === "no"}
-              onChange={() => setCommercialPurposes("no")}
-
-            />
-
-            {/* radio button two */}
-            <label>
-              <b> Will the vehicle be used outside the registered state? </b>
-
-            </label>
-            <Form.Radio
-              label="Yes"
-              value="yes"
-              checked={registeredState === "yes"}
-              onChange={() => setRegisteredState("yes")}
-            />
-            <Form.Radio
-              label="No"
-              value="no"
-              checked={registeredState === "no"}
-              onChange={() => setRegisteredState("no")}
-            />
-          </Form.Group>
-        </div>
-
-
-        <div>
-          <Form.Field> <label>What is the current value of the vehicle?</label>
-            <input placeholder='Estimated Vehicle Value'
-              onChange={e => setCurrentValue(e.target.value)} />
-          </Form.Field>
-
-          <Form.Field> <label>What is the date of vehicle registration?</label>
-            <input type="date" placeholder='Date of Vehicle Registration'
-              onChange={e => setVehicleRegistered(e.target.value)} />
-            <br></br>
-          </Form.Field>
-
-        </div>
         <center>
-          <br></br>
-          <Button
-            color="blue"
+          <Form.Button primary
+            //type='submit'
+            color='teal'
+            fluid size='large'
             onClick={validate}
-          >Submit</Button>
+          >Submit</Form.Button>
         </center>
+        </Segment>
       </Form>
- </div>
-
+    </div>
   );
 }
-
 export default Create;

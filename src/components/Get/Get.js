@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import './Read.css';
 import { Button, Table } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-function Read() {
-  const [tableData, setTableData] = useState([]);
+function Get() {
+  const [data, setData] = useState([]);
+  const [id, setId] = useState(null);
 
-  const callMockApiWithAxiosGET = () => {
-    const endpointURL = "http://localhost:8080/applicants";
+  useEffect(
+    () => {
+      setId(localStorage.getItem('id'));
+    }, [],
+  )
+
+  useEffect(
+    () => {
+      if(id === null)
+      {
+        return;
+      }
+      else{
+        const endpointURL = `http://localhost:8080/applicants/id?id=${id}`;
     axios.get(endpointURL)
-      .then(response => setTableData(response.data));
-  };
-
-  useEffect(() => {
-    callMockApiWithAxiosGET();
-  }, []);
+    .then(response => setData(response.data));
+    console.log("valid call");
+      }
+    
+    }, [id],
+  )
 
   return (
     <div>
@@ -44,38 +56,32 @@ function Read() {
         </Table.Header>
 
         <Table.Body>
-          {
-            tableData.map(data => {
-              return (
-                <Table.Row>
-                  <Table.Cell width={1} textAlign={"center"}>{data.prefix}</Table.Cell>
-                  <Table.Cell textAlign={"center"}>{data.firstName}</Table.Cell>
-                  <Table.Cell textAlign={"center"}>{data.lastName}</Table.Cell>
-                  <Table.Cell textAlign={"center"}>{data.telephoneNumber}</Table.Cell>
-                  <Table.Cell textAlign={"center"}>{data.addressLine1}<br />{data.addressLine2}<br />{data.city}<br />{data.zipcode}</Table.Cell>
-                  <Table.Cell width={1} textAlign={"center"}>{data.vehicleType}</Table.Cell>
-                  <Table.Cell width={1} textAlign={"center"}>{data.engineSize}</Table.Cell>
-                  <Table.Cell width={1} textAlign={"center"}>{data.additionalDrivers}</Table.Cell>
-                  <Table.Cell width={1} textAlign={"center"}>{data.registeredState}</Table.Cell>
-                  <Table.Cell width={1} textAlign={"center"}>{data.commercialPurposes}</Table.Cell>
-                  <Table.Cell width={2} textAlign={"center"}>{data.registeredVehicle}</Table.Cell>
-                  <Table.Cell width={2} textAlign={"center"}>${data.currentValue}</Table.Cell>
-                  <Table.Cell width={3} textAlign={"center"}>${data.quoteAmount}</Table.Cell>
-                </Table.Row>
-              )
-            })
-          }
+          <Table.Row>
+            <Table.Cell width={1} textAlign={"center"}>{data.prefix}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{data.firstName}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{data.lastName}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{data.telephoneNumber}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{data.addressLine1}<br />{data.addressLine2}<br />{data.city}<br />{data.zipcode}</Table.Cell>
+            <Table.Cell width={1} textAlign={"center"}>{data.vehicleType}</Table.Cell>
+            <Table.Cell width={1} textAlign={"center"}>{data.engineSize}</Table.Cell>
+            <Table.Cell width={1} textAlign={"center"}>{data.additionalDrivers}</Table.Cell>
+            <Table.Cell width={1} textAlign={"center"}>{data.registeredState}</Table.Cell>
+            <Table.Cell width={1} textAlign={"center"}>{data.commercialPurposes}</Table.Cell>
+            <Table.Cell width={2} textAlign={"center"}>{data.vehicleR}</Table.Cell>
+            <Table.Cell width={2} textAlign={"center"}>${data.currentValue}</Table.Cell>
+            <Table.Cell width={3} textAlign={"center"}>${data.quoteAmount}</Table.Cell>
+          </Table.Row>
         </Table.Body>
       </Table>
 
       <center>
         <Link to="/admin">
           <Button color="blue" padding="40px"
-          >Open Admin Panel</Button>
+          >Return Admin Panel</Button>
         </Link>
       </center>
     </div>
   );
 }
 
-export default Read;
+export default Get;

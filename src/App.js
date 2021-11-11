@@ -6,6 +6,7 @@ import Update from './components/Update/Update'
 import Delete from './components/Delete/Delete';
 import { BrowserRouter, Route } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel/AdminPanel';
+import Get from './components/Get/Get';
 
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
             <Route exact path="/update" component={Update} />
             <Route exact path="/delete" component={Delete} />
             <Route exact path="/admin" component={AdminPanel} />
+            <Route exact path="/get" component={Get} />
+
             
 
           </div>
